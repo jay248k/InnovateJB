@@ -1,0 +1,9 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Forces the app to be at least the full screen height */
+}
+
+main {
+  flex: 1; /* This pushes the footer down to the very bottom */
+}

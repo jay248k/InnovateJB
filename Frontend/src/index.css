@@ -1,0 +1,36 @@
+/* ===== Hide Scrollbar (Safe Way) ===== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* IE & old Edge */
+body {
+  -ms-overflow-style: none;
+}
+
+/* Base reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;   /* keep vertical scroll, hide horizontal */
+}
+
+/* Root layout */
+#root {
+  height: 100%;
+}
+
+#root > div {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
