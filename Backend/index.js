@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import nodemailer from "nodemailer";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const PORT = 5000;
@@ -13,8 +15,8 @@ app.use(express.json());
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "jayparmar27877@gmail.com", // sender email
-    pass: "kjgx ngkz ejmh txoo",        // Gmail App Password
+    user: process.env.Sender, // sender email
+    pass: process.env.Password,        // Gmail App Password
   },
 });
 
@@ -31,7 +33,7 @@ app.post("/contact", async (req, res) => {
 
   const mailOptions = {
     from: `"Contact Form" <jayparmar27877@gmail.com>`,
-    to: "jayparmar2787@gmail.com",
+    to: process.env.Receiver,
     subject: `📩 ${subject}`,
     html: `
       <h2>New Contact Form Message</h2>

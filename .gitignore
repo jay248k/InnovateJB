@@ -1,0 +1,11 @@
+# Environment files
+.env
+Backend/.env
+Frontend/.env
+
+# Node
+node_modules/
+
+# React
+Frontend/node_modules/
+Frontend/build/
