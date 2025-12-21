@@ -1,11 +1,6 @@
-import { useEffect } from "react";
 import hero from "../../assets/About.png";
 
 const AboutUs = () => {
-    useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, []);
-
   return (
     <div>
 

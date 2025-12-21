@@ -1,11 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 const Contact = () => {
   const topRef = useRef(null); // ref for scrolling to top
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, []);
 
   const [formData, setFormData] = useState({
     fullName: "",

@@ -1,11 +1,6 @@
-import { useEffect } from "react";
 import hero from "../../assets/Project.png";
 
 const Project = () => {
-    useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, []);
-
   return (
     <div className="bg-[#f8f9fa]">
 

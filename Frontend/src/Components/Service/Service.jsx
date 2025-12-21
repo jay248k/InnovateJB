@@ -1,11 +1,6 @@
-import { useEffect } from "react";
 import hero from "../../assets/Service.png";
 
 const Service = () => {
-    useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, []);
-
   return (
     <div style={{ backgroundColor: '#f8f9fa' }}> {/* Dark White */}
 
