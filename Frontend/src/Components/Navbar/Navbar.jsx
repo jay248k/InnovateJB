@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-
+  const navigate=useNavigate();
   const activeClass = "text-[#1f7a4d] font-semibold";
   const normalClass = "text-[#374151] hover:text-[#1f7a4d] transition";
 
@@ -88,8 +88,8 @@ const Navbar = () => {
               </NavLink>
             ))}
 
-            <button className="mt-2 bg-[#1f7a4d] text-white py-2 rounded-lg rounded-lg">
-              Get Quote
+            <button onClick={()=>navigate('/contect-us')} className="mt-2 bg-[#1f7a4d] text-white py-2 rounded-lg rounded-lg">
+              Contact Us
             </button>
           </ul>
         </div>
