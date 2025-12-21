@@ -2,7 +2,7 @@ import hero from "../../assets/Project.png";
 
 const Project = () => {
   return (
-    <div className="bg-[#f8f9fa]">
+    <div className="pt-14 md:pt-16 bg-[#f8f9fa]">
 
       {/* ================= HERO ================= */}
       <section className="relative h-[60vh] flex items-center justify-center text-center text-white">

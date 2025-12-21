@@ -2,7 +2,7 @@ import hero from "../../assets/About.png";
 
 const AboutUs = () => {
   return (
-    <div>
+    <div className="pt-14 md:pt-16">
 
       {/* ================= ABOUT HERO ================= */}
       <section className="relative h-[60vh] flex items-center justify-center text-center text-white">

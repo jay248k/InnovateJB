@@ -88,7 +88,7 @@ const Navbar = () => {
               </NavLink>
             ))}
 
-            <button onClick={()=>navigate('/contect-us')} className="mt-2 bg-[#1f7a4d] text-white py-2 rounded-lg rounded-lg">
+            <button onClick={()=>{navigate('/contect-us');setOpen(false);}} className="mt-2 bg-[#1f7a4d] text-white py-2 rounded-lg rounded-lg">
               Contact Us
             </button>
           </ul>

@@ -3,11 +3,11 @@ import hero from "../../assets/Home.png";
 
 const Home = () => {
   return (
-    <div className="bg-[#f8f9fa]">
+    <div className="pt-14 md:pt-16 bg-[#f8f9fa]">
 
       {/* ================= HERO SECTION ================= */}
       <section
-  className="relative h-screen flex items-center justify-center text-center"
+  className="relative min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-64px)] flex items-center justify-center text-center"
   style={{
     backgroundImage: `url(${hero})`,
     backgroundSize: "cover",

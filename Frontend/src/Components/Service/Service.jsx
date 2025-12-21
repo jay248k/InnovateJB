@@ -2,7 +2,7 @@ import hero from "../../assets/Service.png";
 
 const Service = () => {
   return (
-    <div style={{ backgroundColor: '#f8f9fa' }}> {/* Dark White */}
+    <div className="pt-14 md:pt-16" style={{ backgroundColor: '#f8f9fa' }}> {/* Dark White */}
 
       {/* ================= HERO ================= */}
       <section className="relative h-[60vh] flex items-center justify-center text-center text-white">

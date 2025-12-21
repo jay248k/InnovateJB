@@ -48,14 +48,14 @@ app.post("/contact", async (req, res) => {
     }
 
     const emailData = {
-  to: Receiver,
-  from: {
-    email: Sender, // MUST be verified in SendGrid
-    name: "Website Contact",
-  },
-  replyTo: { email },
-  subject: `📩 New Contact Message from ${fullName}`,
-  html: `
+      to: Receiver,
+      from: {
+        email: Sender, // MUST be verified in SendGrid
+        name: "Website Contact",
+      },
+      replyTo: { email },
+      subject: `📩 New Contact Message from ${fullName}`,
+      html: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
       <div style="background-color: #4CAF50; color: white; padding: 20px; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">New Contact Message</h1>
@@ -74,20 +74,19 @@ app.post("/contact", async (req, res) => {
       </div>
     </div>
   `,
-  mailSettings: {
-    sandboxMode: { enable: false }, // ensure real email delivery
-  },
-  customRequest: {
-    agent: httpsAgent, // force IPv4
-  },
-};
+      mailSettings: {
+        sandboxMode: { enable: false }, // ensure real email delivery
+      },
+      customRequest: {
+        agent: httpsAgent, // force IPv4
+      },
+    };
     await sendGridMail.send(emailData);
 
     return res.status(200).json({
       success: true,
       message: "Email sent successfully ✅ Check your inbox",
     });
-
   } catch (error) {
     console.error(
       "❌ SendGrid FULL ERROR:",

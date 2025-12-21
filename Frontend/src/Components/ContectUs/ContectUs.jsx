@@ -18,13 +18,18 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Scroll to top of form/message when success or error message appears
-  useEffect(() => {
-    if (successMessage || errorMessage) {
-      topRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [successMessage, errorMessage]);
+ useEffect(() => {
+  if (successMessage || errorMessage) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 60);
+  }
+}, [successMessage, errorMessage]);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,9 +59,9 @@ const Contact = () => {
   };
 
   return (
-    <div className="pt-10 bg-[#f0fdf4]">
-      <section className="py-16">
-        <div className="max-w-3xl mx-auto px-6" ref={topRef}>
+    <div className="pt-14 md:pt-16 bg-[#f0fdf4] min-h-screen flex flex-col">
+      <section className="py-16 flex-1 flex items-center">
+        <div className="max-w-3xl mx-auto px-6 w-full" ref={topRef}>
           {/* Show success message only if submission is successful */}
           {successMessage ? (
             <div className="bg-green-100 text-green-800 p-6 rounded-2xl text-center font-medium shadow-lg">
