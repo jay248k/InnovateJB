@@ -1,125 +1,106 @@
 import express from "express";
 import cors from "cors";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import sendGridMail from "@sendgrid/mail";
+import https from "https";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-/* ================= MIDDLEWARE ================= */
 app.use(cors());
 app.use(express.json());
 
-/* ================= ENV VARIABLES ================= */
-const { Sender, Password, Receiver } = process.env;
+// Environment variables
+const { Sender, Receiver, SENDGRID_API_KEY } = process.env;
 
+// Check environment
 console.log("ENV CHECK:", {
   Sender: !!Sender,
-  Password: !!Password,
   Receiver: !!Receiver,
+  SENDGRID_API_KEY: !!SENDGRID_API_KEY,
 });
 
-if (!Sender || !Password || !Receiver) {
-  console.error("❌ Missing email environment variables");
+if (!Sender || !Receiver || !SENDGRID_API_KEY) {
+  console.error("❌ Missing SendGrid environment variables");
+  process.exit(1); // stop server if env missing
 }
 
-/* ================= NODEMAILER CONFIG ================= */
-// Use explicit host/port for better control. Many PaaS providers block raw SMTP
-// ports — see README notes about using SendGrid or other transactional providers.
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // TLS will be used with STARTTLS
-  auth: {
-    user: Sender,
-    pass: Password,
-  },
-  tls: {
-    // Some hosts require this when running inside containers / PaaS
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-});
+sendGridMail.setApiKey(SENDGRID_API_KEY);
 
-transporter
-  .verify()
-  .then(() => console.log("✅ Nodemailer transporter verified"))
-  .catch((err) =>
-    console.error("❌ Nodemailer verify failed:", err && err.message ? err.message : err)
-  );
+// Force IPv4 for SendGrid requests
+const httpsAgent = new https.Agent({ family: 4 });
 
-/* ================= SendGrid Setup (optional) ================= */
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
-if (SENDGRID_API_KEY) {
-  sendGridMail.setApiKey(SENDGRID_API_KEY);
-  console.log("ℹ️ SendGrid enabled as fallback/primary sender");
-}
-
-/* ================= HEALTH CHECK ================= */
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 
-/* ================= CONTACT ROUTE ================= */
 app.post("/contact", async (req, res) => {
-  const { fullName, email, subject, message } = req.body;
+  try {
+    const { fullName, email, subject, message } = req.body;
 
-  if (!fullName || !email || !subject || !message) {
-    return res.status(400).json({
-      success: false,
-      message: "All fields are required",
+    if (!fullName || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    const emailData = {
+  to: Receiver,
+  from: {
+    email: Sender, // MUST be verified in SendGrid
+    name: "Website Contact",
+  },
+  replyTo: { email },
+  subject: `📩 New Contact Message from ${fullName}`,
+  html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
+      <div style="background-color: #4CAF50; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">New Contact Message</h1>
+      </div>
+      <div style="padding: 20px; color: #333;">
+        <p style="font-size: 16px;"><strong>Name:</strong> ${fullName}</p>
+        <p style="font-size: 16px;"><strong>Email:</strong> ${email}</p>
+        <p style="font-size: 16px;"><strong>Subject:</strong> ${subject}</p>
+        <p style="font-size: 16px;"><strong>Message:</strong></p>
+        <p style="background-color: #f5f5f5; padding: 10px; border-radius: 5px;">${message}</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 14px; color: #777;">This email was sent from your website contact form.</p>
+      </div>
+      <div style="background-color: #f0f0f0; padding: 10px; text-align: center; font-size: 12px; color: #555;">
+        &copy; ${new Date().getFullYear()} Your Website. All rights reserved.
+      </div>
+    </div>
+  `,
+  mailSettings: {
+    sandboxMode: { enable: false }, // ensure real email delivery
+  },
+  customRequest: {
+    agent: httpsAgent, // force IPv4
+  },
+};
+    await sendGridMail.send(emailData);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email sent successfully ✅ Check your inbox",
     });
-  }
 
-  // Respond immediately to the client
-  res.status(200).json({
-    success: true,
-    message: "Message received successfully",
-  });
+  } catch (error) {
+    console.error(
+      "❌ SendGrid FULL ERROR:",
+      JSON.stringify(error.response?.body || error, null, 2)
+    );
 
-  // Prepare email payload
-  const mailOptions = {
-    from: `"Contact Form" <${Sender}>`,
-    to: Receiver,
-    subject: `📩 ${subject}`,
-    html: `
-      <h2>New Contact Form Message</h2>
-      <p><strong>Full Name:</strong> ${fullName}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Subject:</strong> ${subject}</p>
-      <p><strong>Message:</strong></p>
-      <p>${message}</p>
-      <hr/>
-      <p>This email was sent from your website contact form.</p>
-    `,
-  };
-
-  // Send using SendGrid if configured, otherwise fallback to nodemailer
-  if (SENDGRID_API_KEY) {
-    sendGridMail
-      .send({
-        to: mailOptions.to,
-        from: mailOptions.from,
-        subject: mailOptions.subject,
-        html: mailOptions.html,
-      })
-      .then(() => console.log("✅ Email sent via SendGrid"))
-      .catch((err) => console.error("❌ SendGrid sending failed:", err && err.message ? err.message : err));
-  } else {
-    // Do not await — send in background and log result
-    transporter
-      .sendMail(mailOptions)
-      .then(() => console.log("✅ Email sent via SMTP (nodemailer)"))
-      .catch((err) => console.error("❌ Email sending failed:", err && err.message ? err.message : err));
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send email ❌ Check console logs",
+    });
   }
 });
 
-/* ================= SERVER ================= */
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
